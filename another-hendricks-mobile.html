@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>ANOTHERLAND | Hendrick's Gin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :root {
+            --black: #0a0a0a;
+            --black-light: #1a1a1a;
+            --white: #f5f5f0;
+            --cream: #f0ebe0;
+            --gold: #c9a962;
+            --gold-dark: #a68a4a;
+            --orange: #e8a545;
+            --green: #7a8b5a;
+        }
+        
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background: var(--black);
+            font-family: 'Cormorant Garamond', Georgia, serif;
+        }
+        
+        /* Image Background */
+        .image-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('1774609277010_image.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 0;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(10,10,10,0.3) 0%,
+                rgba(10,10,10,0.1) 30%,
+                rgba(10,10,10,0.1) 70%,
+                rgba(10,10,10,0.5) 100%
+            );
+            z-index: 1;
+        }
+        
+        /* Screens Container */
+        .screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        
+        .screen.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Logo - Hidden since background has the H logo */
+        .logo {
+            display: none;
+        }
+        
+        /* Common Elements */
+        .diamond-frame {
+            width: 80px;
+            height: 80px;
+            border: 1px solid var(--gold);
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            display: none; /* Hidden - logo is in background */
+        }
+        
+        .diamond-frame .inner {
+            transform: rotate(-45deg);
+            text-align: center;
+        }
+        
+        .title {
+            font-family: 'Cinzel', serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.35em;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            display: none; /* Hidden - ANOTHERLAND text is in background */
+        }
+        
+        .subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--cream);
+            text-align: center;
+            max-width: 280px;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+        }
+        
+        /* Decorative Line */
+        .decorative-line {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--gold), transparent);
+            margin: 1.5rem 0;
+            display: none;
+        }
+        
+        /* ==================== AGE GATE ==================== */
+        #ageGate {
+            text-align: center;
+            justify-content: flex-end;
+            padding-bottom: 8vh;
+        }
+        
+        .age-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.8rem, 7vw, 2.5rem);
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+            display: none; /* Hidden - title is in background image */
+        }
+        
+        .age-question {
+            font-size: 1rem;
+            color: var(--cream);
+            font-style: italic;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+        
+        .age-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            max-width: 280px;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            border: 1px solid var(--gold);
+            background: rgba(10, 10, 10, 0.6);
+            color: var(--gold);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            backdrop-filter: blur(5px);
+        }
+        
+        .btn:hover, .btn:active {
+            background: var(--gold);
+            color: var(--black);
+        }
+        
+        .btn.secondary {
+            border-color: rgba(245, 245, 240, 0.3);
+            color: rgba(245, 245, 240, 0.5);
+            background: rgba(10, 10, 10, 0.4);
+        }
+        
+        .btn.secondary:hover {
+            background: rgba(10, 10, 10, 0.6);
+            border-color: rgba(245, 245, 240, 0.5);
+            color: rgba(245, 245, 240, 0.7);
+        }
+        
+        .age-legal {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            color: rgba(245, 245, 240, 0.4);
+            text-align: center;
+            max-width: 280px;
+            line-height: 1.6;
+        }
+        
+        /* ==================== FORM SCREEN ==================== */
+        #formScreen {
+            text-align: center;
+            justify-content: flex-end;
+            padding-bottom: 5vh;
+        }
+        
+        .form-intro {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.2rem, 5vw, 1.6rem);
+            letter-spacing: 0.1em;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+        
+        .form-intro span {
+            color: var(--gold);
+            font-style: italic;
+        }
+        
+        .form-subtitle {
+            font-size: 0.9rem;
+            font-style: italic;
+            color: var(--cream);
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+        
+        .fomo-text {
+            font-family: 'Cinzel', serif;
+            font-size: 0.6rem;
+            letter-spacing: 0.25em;
+            color: var(--orange);
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+        
+        .fomo-text.pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        .form-container {
+            width: 100%;
+            max-width: 320px;
+        }
+        
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 1rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            background: rgba(10, 10, 10, 0.6);
+            border: 1px solid rgba(201, 169, 98, 0.3);
+            color: var(--cream);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        .input-group input::placeholder {
+            color: rgba(240, 235, 224, 0.5);
+            font-style: italic;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(10, 10, 10, 0.8);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            accent-color: var(--gold);
+            flex-shrink: 0;
+        }
+        
+        .checkbox-group label {
+            font-size: 0.75rem;
+            color: rgba(240, 235, 224, 0.7);
+            line-height: 1.5;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            margin-top: 0.5rem;
+            background: rgba(201, 169, 98, 0.15);
+        }
+        
+        .btn-submit:hover {
+            background: var(--gold);
+        }
+        
+        .spots-left {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: rgba(245, 245, 240, 0.6);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+        
+        .spots-left strong {
+            color: var(--orange);
+            font-weight: 600;
+        }
+        
+        /* ==================== COUNTDOWN SCREEN ==================== */
+        #countdownScreen {
+            text-align: center;
+            justify-content: flex-end;
+            padding-bottom: 8vh;
+        }
+        
+        .confirmed-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            font-family: 'Cinzel', serif;
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            color: var(--green);
+            border: 1px solid var(--green);
+            background: rgba(122, 139, 90, 0.1);
+            margin-bottom: 2rem;
+            backdrop-filter: blur(5px);
+        }
+        
+        .countdown-title {
+            font-family: 'Cinzel', serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.35em;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+        
+        .countdown-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .countdown-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 55px;
+        }
+        
+        .countdown-value {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 10vw, 3rem);
+            font-weight: 400;
+            color: var(--white);
+            line-height: 1;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+        
+        .countdown-label {
+            font-size: 0.65rem;
+            color: rgba(240, 235, 224, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-top: 0.25rem;
+        }
+        
+        .countdown-separator {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            opacity: 0.5;
+            padding-bottom: 1rem;
+        }
+        
+        .event-info {
+            margin-bottom: 2rem;
+        }
+        
+        .event-info .date {
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            color: var(--cream);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+        
+        .event-info .location {
+            font-size: 0.85rem;
+            font-style: italic;
+            color: rgba(240, 235, 224, 0.6);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+        
+        .share-text {
+            font-size: 0.8rem;
+            font-style: italic;
+            color: rgba(240, 235, 224, 0.6);
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+        
+        .social-share {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-share a {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(201, 169, 98, 0.4);
+            color: var(--gold);
+            text-decoration: none;
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+            background: rgba(10, 10, 10, 0.5);
+            backdrop-filter: blur(5px);
+        }
+        
+        .social-share a:hover {
+            background: var(--gold);
+            color: var(--black);
+        }
+        
+        /* Animations */
+        .animate-in {
+            animation: fadeInUp 0.8s ease forwards;
+            opacity: 0;
+        }
+        
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.3s; }
+        .delay-3 { animation-delay: 0.5s; }
+        .delay-4 { animation-delay: 0.7s; }
+        .delay-5 { animation-delay: 0.9s; }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Touch improvements */
+        @media (hover: none) {
+            .btn:active {
+                background: var(--gold);
+                color: var(--black);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Image Background -->
+    <div class="image-bg"></div>
+    <div class="overlay"></div>
+    
+    <!-- ==================== AGE GATE ==================== -->
+    <div class="screen active" id="ageGate">
+        <p class="age-question animate-in delay-2">¿Eres mayor de edad legal<br>para consumir alcohol?</p>
+        
+        <div class="age-buttons animate-in delay-3">
+            <button class="btn" onclick="showForm()">SÍ, SOY MAYOR</button>
+            <button class="btn secondary" onclick="exitSite()">NO</button>
+        </div>
+        
+        <p class="age-legal">
+            Al ingresar, confirmas que tienes la edad legal para consumir alcohol en tu país y aceptas nuestros términos y condiciones.
+        </p>
+    </div>
+    
+    <!-- ==================== FORM SCREEN ==================== -->
+    <div class="screen" id="formScreen">
+        <p class="fomo-text animate-in delay-1 pulse">✦ EVENTO EXCLUSIVO · CUPOS LIMITADOS ✦</p>
+        
+        <h2 class="form-intro animate-in delay-2">Descubre <span>Another</span></h2>
+        <p class="form-subtitle animate-in delay-2">Regístrate para asegurar tu invitación</p>
+        
+        <div class="form-container animate-in delay-3">
+            <form id="registrationForm" onsubmit="submitForm(event)">
+                <div class="input-group">
+                    <input type="text" id="name" placeholder="Nombre completo" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="email" placeholder="Email" required>
+                </div>
+                <div class="input-group">
+                    <input type="tel" id="phone" placeholder="Teléfono (opcional)">
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">Acepto recibir información sobre el evento y confirmo que soy mayor de edad.</label>
+                </div>
+                
+                <button type="submit" class="btn btn-submit">ASEGURAR MI LUGAR</button>
+            </form>
+            
+            <p class="spots-left">Solo quedan <strong id="spotsCount">12</strong> lugares disponibles</p>
+        </div>
+    </div>
+    
+    <!-- ==================== COUNTDOWN SCREEN ==================== -->
+    <div class="screen" id="countdownScreen">
+        <div class="confirmed-badge animate-in delay-1">REGISTRO CONFIRMADO</div>
+        
+        <p class="countdown-title animate-in delay-2">ANOTHERLAND LLEGA EN</p>
+        
+        <div class="countdown-container animate-in delay-3">
+            <div class="countdown-item">
+                <span class="countdown-value" id="days">00</span>
+                <span class="countdown-label">Días</span>
+            </div>
+            <span class="countdown-separator">:</span>
+            <div class="countdown-item">
+                <span class="countdown-value" id="hours">00</span>
+                <span class="countdown-label">Horas</span>
+            </div>
+            <span class="countdown-separator">:</span>
+            <div class="countdown-item">
+                <span class="countdown-value" id="minutes">00</span>
+                <span class="countdown-label">Min</span>
+            </div>
+            <span class="countdown-separator">:</span>
+            <div class="countdown-item">
+                <span class="countdown-value" id="seconds">00</span>
+                <span class="countdown-label">Seg</span>
+            </div>
+        </div>
+        
+        <div class="event-info animate-in delay-4">
+            <p class="date">JUNIO 2026 · SANTIAGO</p>
+            <p class="location">Ubicación secreta por revelar</p>
+        </div>
+        
+        <p class="share-text animate-in delay-5">Comparte con alguien que merezca descubrir Another</p>
+        
+        <div class="social-share animate-in delay-5">
+            <a href="#" onclick="shareWhatsApp()">WA</a>
+            <a href="#" onclick="shareInstagram()">IG</a>
+            <a href="#" onclick="copyLink()">🔗</a>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let currentScreen = 'ageGate';
+        
+        // Screen transitions
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            currentScreen = screenId;
+            
+            // Trigger animations
+            const newScreen = document.getElementById(screenId);
+            newScreen.querySelectorAll('.animate-in').forEach(el => {
+                el.style.animation = 'none';
+                el.offsetHeight; // Trigger reflow
+                el.style.animation = null;
+            });
+        }
+        
+        // Age Gate
+        function showForm() {
+            sessionStorage.setItem('ageVerified', 'true');
+            showScreen('formScreen');
+            updateSpotsCount();
+        }
+        
+        function exitSite() {
+            window.location.href = 'https://www.google.com';
+        }
+        
+        // Check if already verified
+        if (sessionStorage.getItem('registered')) {
+            showScreen('countdownScreen');
+            startCountdown();
+        } else if (sessionStorage.getItem('ageVerified')) {
+            showScreen('formScreen');
+        }
+        
+        // Form submission
+        function submitForm(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const terms = document.getElementById('terms').checked;
+            
+            if (!name || !email || !terms) {
+                return;
+            }
+            
+            // Simulate registration
+            sessionStorage.setItem('registered', 'true');
+            sessionStorage.setItem('userName', name);
+            
+            // Show countdown
+            showScreen('countdownScreen');
+            startCountdown();
+        }
+        
+        // Spots counter (fake scarcity)
+        function updateSpotsCount() {
+            const baseSpots = 15;
+            const randomDecrease = Math.floor(Math.random() * 5);
+            const spots = baseSpots - randomDecrease;
+            document.getElementById('spotsCount').textContent = spots;
+            
+            // Decrease spots randomly every 30-60 seconds
+            setTimeout(() => {
+                const current = parseInt(document.getElementById('spotsCount').textContent);
+                if (current > 3) {
+                    document.getElementById('spotsCount').textContent = current - 1;
+                }
+            }, 30000 + Math.random() * 30000);
+        }
+        
+        // Countdown
+        function startCountdown() {
+            // Set event date: First week of June 2026
+            const eventDate = new Date('2026-06-05T19:30:00');
+            
+            function updateCountdown() {
+                const now = new Date();
+                const diff = eventDate - now;
+                
+                if (diff <= 0) {
+                    document.getElementById('days').textContent = '00';
+                    document.getElementById('hours').textContent = '00';
+                    document.getElementById('minutes').textContent = '00';
+                    document.getElementById('seconds').textContent = '00';
+                    return;
+                }
+                
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            }
+            
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+        
+        // Social sharing
+        function shareWhatsApp() {
+            const text = encodeURIComponent('🍸 Descubre Another Hendrick\'s en ANOTHERLAND. Un evento exclusivo en Santiago. ¿Te atreves a encontrar tu otro yo?');
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+        
+        function shareInstagram() {
+            // Instagram doesn't support direct sharing, open profile
+            alert('Comparte en tu historia de Instagram y etiqueta @hendricksgin');
+        }
+        
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('¡Link copiado!');
+            });
+        }
+        
+        // Prevent zoom on input focus (iOS)
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.fontSize = '16px';
+            });
+        });
+    </script>
+</body>
+</html>
